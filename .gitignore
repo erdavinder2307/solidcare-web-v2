@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+dist/
+.vite/
+
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
