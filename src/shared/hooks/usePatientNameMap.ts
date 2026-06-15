@@ -6,7 +6,7 @@ import { patientsApi } from "@/features/patients/api/patientsApi";
 export function usePatientNameMap() {
   const { data, isLoading } = useQuery({
     queryKey: ["patients", "name-lookup"],
-    queryFn: () => patientsApi.list({ page: 1, page_size: 500 }),
+    queryFn: () => patientsApi.list({ page: 1, page_size: 100 }),
     staleTime: 5 * 60_000,
   });
 

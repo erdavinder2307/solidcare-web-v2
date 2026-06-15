@@ -44,7 +44,7 @@ export function useTodayAppointments(options?: { doctorOnly?: boolean }) {
 
   const patientsQuery = useQuery({
     queryKey: ["patients", "queue-lookup"],
-    queryFn: () => patientsApi.list({ page: 1, page_size: 200 }),
+    queryFn: () => patientsApi.list({ page: 1, page_size: 100 }),
   });
 
   const patientNames = useMemo(() => {
