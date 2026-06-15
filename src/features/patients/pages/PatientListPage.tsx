@@ -4,7 +4,6 @@ import {
   Button,
   Chip,
   InputAdornment,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -25,6 +24,8 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { patientsApi } from "../api/patientsApi";
 import { useAuthStore } from "@/app/store/authStore";
+import { PageHeader, PageLayout } from "@/shared/layout";
+import { EmptyState, EntityStatusBadge, Surface } from "@/shared/ui";
 
 export default function PatientListPage() {
   const navigate = useNavigate();
@@ -42,34 +43,32 @@ export default function PatientListPage() {
   const total = data?.total ?? 0;
 
   return (
-    <Box>
-      {/* Header */}
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-        <Box>
-          <Typography variant="h5" fontWeight={700}>Patients</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {total.toLocaleString()} total patients registered
-          </Typography>
-        </Box>
-        {can("patient:create") && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate("/patients/new")}
-          >
-            Register Patient
-          </Button>
-        )}
-      </Box>
+    <PageLayout maxWidth="none">
+      <PageHeader
+        title="Patients"
+        subtitle={`${total.toLocaleString()} total patients registered`}
+        actions={
+          can("patient:create") ? (
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate("/patients/new")}
+            >
+              Register Patient
+            </Button>
+          ) : undefined
+        }
+      />
 
       {/* Search */}
-      <Paper elevation={0} sx={{ p: 2, mb: 2, border: "1px solid", borderColor: "divider" }}>
+      <Surface sx={{ p: 2, mb: 2 }}>
         <TextField
           placeholder="Search by name, phone, or UHID..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(0); }}
           size="small"
-          sx={{ width: 360 }}
+          fullWidth
+          sx={{ maxWidth: { xs: "100%", sm: 360 } }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -78,10 +77,9 @@ export default function PatientListPage() {
             ),
           }}
         />
-      </Paper>
+      </Surface>
 
-      {/* Table */}
-      <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid", borderColor: "divider" }}>
+      <TableContainer component={Surface} sx={{ overflowX: "auto" }}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -139,16 +137,15 @@ export default function PatientListPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        label={patient.is_active ? "Active" : "Inactive"}
-                        size="small"
-                        color={patient.is_active ? "success" : "default"}
-                        variant="outlined"
-                      />
+                      <EntityStatusBadge status={patient.is_active ? "active" : "inactive"} />
                     </TableCell>
                     <TableCell align="right">
                       <Tooltip title="View patient">
-                        <IconButton size="small" onClick={() => navigate(`/patients/${patient.id}`)}>
+                        <IconButton
+                          size="small"
+                          aria-label={`View ${patient.full_name}`}
+                          onClick={() => navigate(`/patients/${patient.id}`)}
+                        >
                           <VisibilityOutlinedIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
@@ -157,8 +154,18 @@ export default function PatientListPage() {
                 ))}
             {!isLoading && patients.length === 0 && (
               <TableRow>
-                <TableCell colSpan={9} align="center" sx={{ py: 6 }}>
-                  <Typography color="text.secondary">No patients found</Typography>
+                <TableCell colSpan={9} sx={{ p: 0, border: 0 }}>
+                  <EmptyState
+                    title="No patients found"
+                    description={search ? "Try a different search term or clear the filter." : "Register your first patient to get started."}
+                    action={
+                      can("patient:create") && !search ? (
+                        <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/patients/new")}>
+                          Register Patient
+                        </Button>
+                      ) : undefined
+                    }
+                  />
                 </TableCell>
               </TableRow>
             )}
@@ -174,6 +181,6 @@ export default function PatientListPage() {
           rowsPerPageOptions={[10, 20, 50]}
         />
       </TableContainer>
-    </Box>
+    </PageLayout>
   );
 }

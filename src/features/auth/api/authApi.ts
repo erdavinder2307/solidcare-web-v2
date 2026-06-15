@@ -28,4 +28,13 @@ export const authApi = {
 
   confirmMfa: (totp_code: string) =>
     apiClient.post("/auth/mfa/confirm", { totp_code }),
+
+  changePassword: (current_password: string, new_password: string) =>
+    apiClient.post("/auth/change-password", { current_password, new_password }),
+
+  passwordReset: (email: string) =>
+    apiClient.post("/auth/password-reset", { email }),
+
+  passwordResetConfirm: (token: string, new_password: string) =>
+    apiClient.post("/auth/password-reset/confirm", { token, new_password }),
 };

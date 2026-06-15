@@ -1,0 +1,13 @@
+export { LoginPage } from "./LoginPage";
+export { DashboardPage } from "./DashboardPage";
+export { PatientsPage } from "./PatientsPage";
+export { AppointmentsPage } from "./AppointmentsPage";
+export { WaitingRoomPage } from "./WaitingRoomPage";
+export { EncountersPage } from "./EncountersPage";
+export { PrescriptionsPage } from "./PrescriptionsPage";
+export { InvoicesPage } from "./InvoicesPage";
+export { UsersPage } from "./UsersPage";
+export { ClinicsPage } from "./ClinicsPage";
+export { DoctorsPage } from "./DoctorsPage";
+export { SettingsPage } from "./SettingsPage";
+export { BasePage } from "./BasePage";

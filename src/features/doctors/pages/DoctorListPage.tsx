@@ -1,30 +1,57 @@
-import React from "react";
-import { Box, Typography, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from "@mui/material";
+import {
+  Box,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import { useQuery } from "@tanstack/react-query";
-import apiClient from "@/lib/api/apiClient";
+import { useNavigate } from "react-router-dom";
+import { doctorsApi } from "../api/doctorsApi";
+import { useAuthStore } from "@/app/store/authStore";
+import { formatCurrency } from "@/shared/utils/formatters";
+import { PageHeader, PageLayout } from "@/shared/layout";
+import { EmptyState, EntityStatusBadge, Surface } from "@/shared/ui";
 
 export default function DoctorListPage() {
-  const { data, isLoading } = useQuery({
+  const navigate = useNavigate();
+  const can = useAuthStore((s) => s.can);
+
+  const { data: doctors = [], isLoading } = useQuery({
     queryKey: ["doctors"],
-    queryFn: () => apiClient.get("/doctors").then(r => r.data),
+    queryFn: () => doctorsApi.list(),
   });
-  const doctors = Array.isArray(data) ? data : [];
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Box>
-          <Typography variant="h5" fontWeight={700}>Doctors</Typography>
-          <Typography variant="body2" color="text.secondary">{doctors.length} doctors registered</Typography>
-        </Box>
-        <Button variant="contained" startIcon={<AddIcon />}>Add Doctor</Button>
-      </Box>
-      <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid", borderColor: "divider" }}>
+    <PageLayout maxWidth="none">
+      <PageHeader
+        title="Doctors"
+        subtitle={`${doctors.length} doctors registered`}
+        breadcrumbs={[
+          { label: "Administration" },
+          { label: "Doctors" },
+        ]}
+        actions={
+          can("doctor:create") ? (
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/doctors/new")}>
+              Add Doctor
+            </Button>
+          ) : undefined
+        }
+      />
+
+      <TableContainer component={Surface} sx={{ overflowX: "auto" }}>
         <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>Doctor</TableCell>
+              <TableCell>Email</TableCell>
               <TableCell>Specializations</TableCell>
               <TableCell>Registration #</TableCell>
               <TableCell>Consultation Fee</TableCell>
@@ -32,21 +59,47 @@ export default function DoctorListPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {doctors.map((d: any) => (
-              <TableRow key={d.id} hover>
-                <TableCell><Typography variant="body2" fontWeight={500}>Dr. {d.user_id}</Typography></TableCell>
-                <TableCell>{(d.specializations || []).map((s: string) => <Chip key={s} label={s} size="small" sx={{ mr: 0.5 }} />)}</TableCell>
+            {doctors.map((d) => (
+              <TableRow key={d.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate(`/doctors/${d.id}`)}>
+                <TableCell>
+                  <Typography variant="body2" fontWeight={500}>
+                    Dr. {d.first_name && d.last_name ? `${d.first_name} ${d.last_name}` : d.user_id.slice(0, 8)}
+                  </Typography>
+                </TableCell>
+                <TableCell>{d.email ?? "—"}</TableCell>
+                <TableCell>
+                  {(d.specializations || []).length > 0
+                    ? (d.specializations || []).join(", ")
+                    : "—"}
+                </TableCell>
                 <TableCell>{d.registration_number ?? "—"}</TableCell>
-                <TableCell>{d.consultation_fee ? `₹${d.consultation_fee}` : "—"}</TableCell>
-                <TableCell><Chip label={d.status} size="small" color={d.status === "active" ? "success" : "default"} /></TableCell>
+                <TableCell>{d.consultation_fee ? formatCurrency(d.consultation_fee) : "—"}</TableCell>
+                <TableCell>
+                  <EntityStatusBadge status={d.status} />
+                </TableCell>
               </TableRow>
             ))}
             {!isLoading && doctors.length === 0 && (
-              <TableRow><TableCell colSpan={5} align="center" sx={{ py: 6 }}><Typography color="text.secondary">No doctors found</Typography></TableCell></TableRow>
+              <TableRow>
+                <TableCell colSpan={6} sx={{ p: 0, border: 0 }}>
+                  <EmptyState
+                    icon={<PersonAddOutlinedIcon sx={{ fontSize: 48 }} />}
+                    title="No doctors registered"
+                    description="Add your first doctor to enable appointments and clinical workflows."
+                    action={
+                      can("doctor:create") ? (
+                        <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/doctors/new")}>
+                          Add Doctor
+                        </Button>
+                      ) : undefined
+                    }
+                  />
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
+    </PageLayout>
   );
 }

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { authApi } from "@/features/auth/api/authApi";
 
 interface AuthUser {
   userId: string;
@@ -19,6 +20,7 @@ interface AuthState {
   setTokens: (accessToken: string, refreshToken: string) => void;
   setUser: (user: AuthUser) => void;
   logout: () => void;
+  logoutAsync: () => Promise<void>;
   can: (permission: string) => boolean;
   hasRole: (role: string) => boolean;
 }
@@ -58,14 +60,26 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => set({ user, orgId: user.orgId }),
 
-      logout: () =>
-        set({
-          user: null,
-          accessToken: null,
-          refreshToken: null,
-          orgId: null,
-          isAuthenticated: false,
-        }),
+  logout: () =>
+    set({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      orgId: null,
+      isAuthenticated: false,
+    }),
+
+  logoutAsync: async () => {
+    const { refreshToken, logout } = get();
+    if (refreshToken) {
+      try {
+        await authApi.logout(refreshToken);
+      } catch {
+        // still clear local session
+      }
+    }
+    logout();
+  },
 
       can: (permission) => {
         const { user } = get();

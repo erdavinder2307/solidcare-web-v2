@@ -9,6 +9,7 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Link,
 } from "@mui/material";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
@@ -16,9 +17,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
 import { useAuthStore } from "@/app/store/authStore";
 import { authApi } from "../api/authApi";
+import { DevQuickLogin } from "../components/DevQuickLogin";
+import { PageMeta } from "@/features/marketing/components/PageMeta";
+
+interface LoginLocationState {
+  from?: { pathname: string };
+}
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -32,11 +39,12 @@ export default function LoginPage() {
   const { setTokens } = useAuthStore();
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const from = (location.state as any)?.from?.pathname || "/dashboard";
+  const from = (location.state as LoginLocationState)?.from?.pathname || "/dashboard";
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
@@ -55,6 +63,8 @@ export default function LoginPage() {
   const onSubmit = (values: FormData) => loginMutation.mutate(values);
 
   return (
+    <>
+      <PageMeta title="Login" description="Sign in to Solidcare" path="/login" noIndex />
     <Box
       sx={{
         minHeight: "100vh",
@@ -70,6 +80,11 @@ export default function LoginPage() {
         sx={{ p: 5, width: "100%", maxWidth: 440, borderRadius: 3, border: "1px solid", borderColor: "divider" }}
       >
         {/* Brand */}
+        <Link component={RouterLink} to="/" underline="none" color="inherit" sx={{ display: "block", mb: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            ← Back to website
+          </Typography>
+        </Link>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4 }}>
           <Box
             sx={{
@@ -144,10 +159,19 @@ export default function LoginPage() {
           </Button>
         </form>
 
+        <DevQuickLogin
+          loginMutation={loginMutation}
+          onAutofill={(email, password) => {
+            setValue("email", email, { shouldValidate: true });
+            setValue("password", password, { shouldValidate: true });
+          }}
+        />
+
         <Typography variant="caption" color="text.secondary" display="block" textAlign="center" mt={3}>
-          © 2026 Solidcare Health. All rights reserved.
+          © {new Date().getFullYear()} Solidev Electrosoft. All rights reserved.
         </Typography>
       </Paper>
     </Box>
+    </>
   );
 }

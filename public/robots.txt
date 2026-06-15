@@ -1,0 +1,32 @@
+User-agent: *
+Allow: /
+Allow: /platform
+Allow: /features
+Allow: /solutions/
+Allow: /about
+Allow: /contact
+Allow: /security
+Allow: /pricing
+Allow: /careers
+Allow: /privacy
+Allow: /terms
+Allow: /cookies
+Allow: /disclaimer
+
+Disallow: /dashboard
+Disallow: /patients
+Disallow: /doctors
+Disallow: /appointments
+Disallow: /encounters
+Disallow: /clinical
+Disallow: /consultation
+Disallow: /prescriptions
+Disallow: /billing
+Disallow: /reports
+Disallow: /admin
+Disallow: /audit
+Disallow: /settings
+Disallow: /login
+Disallow: /mfa
+
+Sitemap: https://solidcare.org/sitemap.xml

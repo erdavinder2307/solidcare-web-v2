@@ -9,81 +9,92 @@ import {
   Tooltip,
   Typography,
   Divider,
-  Chip,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuthStore } from "@/app/store/authStore";
 import { useUIStore } from "@/app/store/uiStore";
+import { LAYOUT } from "@/shared/layout/constants";
+import { useLayoutDimensions } from "@/shared/layout/useLayoutDimensions";
+import {
+  BOTTOM_NAV_ITEMS,
+  NAV_GROUPS,
+  canSeeNavItem,
+  isNavItemActive,
+  type NavItemConfig,
+} from "@/shared/layout/navigation";
 
-import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import MedicalServicesOutlinedIcon from "@mui/icons-material/MedicalServicesOutlined";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import QueuePlayNextOutlinedIcon from "@mui/icons-material/QueuePlayNextOutlined";
+interface SidebarContentProps {
+  expanded: boolean;
+  onNavigate?: () => void;
+}
 
-const SIDEBAR_WIDTH = 260;
-const COLLAPSED_WIDTH = 72;
-
-const navItems = [
-  { label: "Dashboard", icon: <DashboardOutlinedIcon />, path: "/dashboard", permission: null },
-  { label: "Patients", icon: <PeopleOutlinedIcon />, path: "/patients", permission: "patient:read" },
-  { label: "Doctors", icon: <PersonOutlinedIcon />, path: "/doctors", permission: "doctor:read" },
-  { label: "Appointments", icon: <CalendarMonthOutlinedIcon />, path: "/appointments", permission: "appointment:read" },
-  { label: "Queue", icon: <QueuePlayNextOutlinedIcon />, path: "/appointments/queue", permission: "appointment:read" },
-  { label: "Clinical", icon: <MedicalServicesOutlinedIcon />, path: "/encounters", permission: "encounter:read" },
-  { label: "Prescriptions", icon: <DescriptionOutlinedIcon />, path: "/prescriptions", permission: "prescription:read" },
-  { label: "Billing", icon: <ReceiptOutlinedIcon />, path: "/billing/invoices", permission: "billing:read" },
-  { label: "Reports", icon: <BarChartOutlinedIcon />, path: "/reports", permission: "report:read" },
-];
-
-const bottomItems = [
-  { label: "Settings", icon: <SettingsOutlinedIcon />, path: "/settings", permission: null },
-];
-
-export function Sidebar() {
-  const { sidebarOpen } = useUIStore();
+function SidebarContent({ expanded, onNavigate }: SidebarContentProps) {
+  const can = useAuthStore((s) => s.can);
+  const hasRole = useAuthStore((s) => s.hasRole);
   const navigate = useNavigate();
   const location = useLocation();
-  const drawerWidth = sidebarOpen ? SIDEBAR_WIDTH : COLLAPSED_WIDTH;
 
-  const NavItem = ({ label, icon, path }: { label: string; icon: React.ReactNode; path: string }) => {
-    const isActive = location.pathname === path || location.pathname.startsWith(path + "/");
+  const visibleGroups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => canSeeNavItem(item, can, hasRole)),
+  })).filter((group) => group.items.length > 0);
+
+  const visibleBottomItems = BOTTOM_NAV_ITEMS.filter((item) => canSeeNavItem(item, can, hasRole));
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    onNavigate?.();
+  };
+
+  const NavItem = ({ label, icon, path, excludePrefixes }: NavItemConfig) => {
+    const active = isNavItemActive(location.pathname, path, excludePrefixes);
     return (
-      <Tooltip title={!sidebarOpen ? label : ""} placement="right" arrow>
+      <Tooltip title={!expanded ? label : ""} placement="right" arrow>
         <ListItemButton
-          selected={isActive}
-          onClick={() => navigate(path)}
-          sx={{ px: sidebarOpen ? 2 : 1.5, justifyContent: sidebarOpen ? "flex-start" : "center" }}
+          selected={active}
+          onClick={() => handleNavigate(path)}
+          aria-current={active ? "page" : undefined}
+          sx={{
+            px: expanded ? 1.5 : 1,
+            justifyContent: expanded ? "flex-start" : "center",
+            minHeight: 38,
+          }}
         >
-          <ListItemIcon sx={{ minWidth: sidebarOpen ? 40 : "auto", color: isActive ? "primary.main" : "text.secondary" }}>
+          <ListItemIcon
+            sx={{
+              minWidth: expanded ? 36 : "auto",
+              color: active ? "primary.main" : "text.secondary",
+              "& .MuiSvgIcon-root": { fontSize: 20 },
+            }}
+          >
             {icon}
           </ListItemIcon>
-          {sidebarOpen && <ListItemText primary={label} primaryTypographyProps={{ fontSize: "0.875rem", fontWeight: isActive ? 600 : 400 }} />}
+          {expanded && (
+            <ListItemText
+              primary={label}
+              primaryTypographyProps={{
+                fontSize: "0.875rem",
+                fontWeight: active ? 600 : 400,
+              }}
+            />
+          )}
         </ListItemButton>
       </Tooltip>
     );
   };
 
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: drawerWidth,
-          boxSizing: "border-box",
-          transition: "width 0.2s ease",
-          overflow: "hidden",
-        },
-      }}
-    >
-      {/* Logo / Brand */}
-      <Box sx={{ px: sidebarOpen ? 2.5 : 1.5, py: 2, display: "flex", alignItems: "center", gap: 1.5, minHeight: 64 }}>
+    <>
+      <Box
+        sx={{
+          px: expanded ? 2.5 : 1.5,
+          py: 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          minHeight: LAYOUT.TOPBAR_HEIGHT,
+        }}
+      >
         <Box
           sx={{
             width: 36,
@@ -96,14 +107,16 @@ export function Sidebar() {
             flexShrink: 0,
           }}
         >
-          <Typography variant="body2" fontWeight={700} color="white">S</Typography>
+          <Typography variant="body2" fontWeight={700} color="white">
+            S
+          </Typography>
         </Box>
-        {sidebarOpen && (
-          <Box>
-            <Typography variant="body1" fontWeight={700} color="primary.main" lineHeight={1.1}>
+        {expanded && (
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="body1" fontWeight={700} color="primary.main" lineHeight={1.1} noWrap>
               Solidcare
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" color="text.secondary" noWrap>
               Healthcare Platform
             </Typography>
           </Box>
@@ -112,25 +125,97 @@ export function Sidebar() {
 
       <Divider />
 
-      {/* Main nav */}
-      <Box sx={{ flexGrow: 1, px: 1, py: 1.5, overflowY: "auto" }}>
-        <List dense disablePadding>
-          {navItems.map((item) => (
-            <NavItem key={item.path} {...item} />
-          ))}
-        </List>
+      <Box sx={{ flexGrow: 1, px: 0.75, py: 1, overflowY: "auto" }}>
+        {visibleGroups.map((group, groupIndex) => (
+          <Box key={group.id} sx={{ mb: groupIndex < visibleGroups.length - 1 ? 1 : 0 }}>
+            {expanded && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight={600}
+                sx={{
+                  display: "block",
+                  px: 1.5,
+                  py: 0.5,
+                  textTransform: "uppercase",
+                  letterSpacing: 0.6,
+                  fontSize: "0.6875rem",
+                }}
+              >
+                {group.label}
+              </Typography>
+            )}
+            {!expanded && groupIndex > 0 && <Divider sx={{ my: 1 }} />}
+            <List dense disablePadding>
+              {group.items.map((item) => (
+                <NavItem key={item.path} {...item} />
+              ))}
+            </List>
+          </Box>
+        ))}
       </Box>
 
       <Divider />
 
-      {/* Bottom nav */}
       <Box sx={{ px: 1, py: 1.5 }}>
         <List dense disablePadding>
-          {bottomItems.map((item) => (
+          {visibleBottomItems.map((item) => (
             <NavItem key={item.path} {...item} />
           ))}
         </List>
       </Box>
+    </>
+  );
+}
+
+export function Sidebar() {
+  const { sidebarOpen, mobileNavOpen, closeMobileNav } = useUIStore();
+  const { isMobile, drawerWidth } = useLayoutDimensions();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    if (isMobile) closeMobileNav();
+  }, [location.pathname, isMobile, closeMobileNav]);
+
+  const paperSx = {
+    width: isMobile ? LAYOUT.SIDEBAR_WIDTH : drawerWidth,
+    boxSizing: "border-box" as const,
+    display: "flex",
+    flexDirection: "column" as const,
+    overflow: "hidden",
+  };
+
+  if (isMobile) {
+    return (
+      <Drawer
+        variant="temporary"
+        open={mobileNavOpen}
+        onClose={closeMobileNav}
+        ModalProps={{ keepMounted: true }}
+        sx={{ "& .MuiDrawer-paper": paperSx }}
+      >
+        <SidebarContent expanded onNavigate={closeMobileNav} />
+      </Drawer>
+    );
+  }
+
+  return (
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          ...paperSx,
+          transition: (theme) =>
+            theme.transitions.create("width", {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.enteringScreen,
+            }),
+        },
+      }}
+    >
+      <SidebarContent expanded={sidebarOpen} />
     </Drawer>
   );
 }

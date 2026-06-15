@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://solidcare.org/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://solidcare.org/platform</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://solidcare.org/features</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://solidcare.org/solutions/clinics</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://solidcare.org/solutions/hospitals</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://solidcare.org/solutions/chains</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://solidcare.org/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://solidcare.org/contact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://solidcare.org/security</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://solidcare.org/pricing</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://solidcare.org/careers</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://solidcare.org/privacy</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://solidcare.org/terms</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://solidcare.org/cookies</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://solidcare.org/disclaimer</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>
