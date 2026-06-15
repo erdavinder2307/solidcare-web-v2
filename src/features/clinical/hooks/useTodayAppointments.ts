@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { appointmentsApi, type Appointment, type AppointmentStatus } from "@/features/appointments/api/appointmentsApi";
+import { appointmentsApi, type AppointmentStatus } from "@/features/appointments/api/appointmentsApi";
 import { patientsApi } from "@/features/patients/api/patientsApi";
 import { doctorsApi } from "@/features/doctors/api/doctorsApi";
 import { useAuthStore } from "@/app/store/authStore";

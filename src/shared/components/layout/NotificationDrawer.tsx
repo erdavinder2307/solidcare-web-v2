@@ -17,7 +17,10 @@ import DoneAllOutlinedIcon from "@mui/icons-material/DoneAllOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUIStore } from "@/app/store/uiStore";
-import { notificationsApi } from "@/features/notifications/api/notificationsApi";
+import {
+  notificationsApi,
+  type Notification,
+} from "@/features/notifications/api/notificationsApi";
 import { formatDateTime } from "@/shared/utils/formatters";
 
 export function NotificationDrawer() {
@@ -122,7 +125,7 @@ export function NotificationDrawer() {
 
         {!isLoading && items.length > 0 && (
           <List disablePadding>
-            {items.map((n, index) => (
+            {items.map((n: Notification, index: number) => (
               <React.Fragment key={n.id}>
                 {index > 0 && <Divider />}
                 <ListItem disablePadding>

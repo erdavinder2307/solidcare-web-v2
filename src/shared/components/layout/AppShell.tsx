@@ -7,7 +7,7 @@ import { useLayoutDimensions } from "@/shared/layout/useLayoutDimensions";
 import { densityTokens } from "@/lib/theme/tokens";
 
 export function AppShell() {
-  const { mainOffset, topbarHeight } = useLayoutDimensions();
+  const { topbarHeight } = useLayoutDimensions();
   const theme = useTheme();
   const pagePadding = densityTokens[theme.solidcare.density].pagePadding;
 

@@ -27,7 +27,13 @@ const FOOTER_LINKS = {
   ],
 };
 
-function FooterColumn({ title, links }: { title: string; links: { label: string; path: string }[] }) {
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: readonly { label: string; path: string }[];
+}) {
   return (
     <Box>
       <Typography variant="subtitle2" fontWeight={700} gutterBottom>

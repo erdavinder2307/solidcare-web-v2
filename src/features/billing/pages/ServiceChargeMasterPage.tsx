@@ -137,12 +137,12 @@ export default function ServiceChargeMasterPage() {
   };
 
   return (
-    <PageLayout maxWidth="lg">
+    <PageLayout>
       <PageHeader
         title="Service Charge Master"
         subtitle="Manage clinic service codes, categories, and pricing"
-        breadcrumbs={[{ label: "Billing", href: "/billing/invoices" }, { label: "Service Charges" }]}
-        action={
+        breadcrumbs={[{ label: "Billing", to: "/billing/invoices" }, { label: "Service Charges" }]}
+        actions={
           can("billing:write") ? (
             <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
               Add service
@@ -153,7 +153,7 @@ export default function ServiceChargeMasterPage() {
 
       <Surface>
         <DataTable<ServiceCharge>
-          loading={isLoading}
+          isLoading={isLoading}
           columns={[
             { id: "code", header: "Code", render: (r) => r.service_code },
             {

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { billingApi } from "../api/billingApi";
 import { patientsApi } from "@/features/patients/api/patientsApi";
 import { clinicsApi } from "@/features/clinics/api/clinicsApi";
-import { formatCurrency, formatDate, formatDateTime } from "@/shared/utils/formatters";
+import { formatCurrency, formatDate } from "@/shared/utils/formatters";
 
 const METHOD_LABELS: Record<string, string> = {
   cash: "Cash",

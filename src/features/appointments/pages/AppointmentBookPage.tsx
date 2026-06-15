@@ -16,7 +16,7 @@ import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { appointmentsApi } from "../api/appointmentsApi";
-import { patientsApi } from "@/features/patients/api/patientsApi";
+import { patientsApi, type PatientListItem } from "@/features/patients/api/patientsApi";
 import { doctorsApi } from "@/features/doctors/api/doctorsApi";
 import apiClient from "@/lib/api/apiClient";
 
@@ -93,7 +93,7 @@ export default function AppointmentBookPage() {
     },
   });
 
-  const patients = patientsData?.items ?? [];
+  const patients: PatientListItem[] = patientsData?.items ?? [];
 
   return (
     <Box maxWidth={720}>
@@ -119,9 +119,9 @@ export default function AppointmentBookPage() {
             helperText={errors.patient_id?.message}
             sx={{ mb: 2 }}
           >
-            {patients.map((p) => (
+            {patients.map((p: PatientListItem) => (
               <MenuItem key={p.id} value={p.id}>
-                {p.full_name ?? `${p.first_name} ${p.last_name}`} ({p.uhid})
+                {p.full_name} ({p.uhid})
               </MenuItem>
             ))}
           </TextField>
