@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
@@ -84,8 +84,8 @@ export default function AppointmentCalendarPage() {
     return map;
   }, [patientPage?.items]);
 
-  const calendarQueries = weekDates.map((date) =>
-    useQuery({
+  const calendarQueries = useQueries({
+    queries: weekDates.map((date) => ({
       queryKey: ["calendar-appointments", clinicId, doctorId || "all", isoDate(date)],
       queryFn: () =>
         appointmentsApi.list({
@@ -96,8 +96,8 @@ export default function AppointmentCalendarPage() {
           doctor_id: doctorId || undefined,
         }),
       staleTime: 30_000,
-    }),
-  );
+    })),
+  });
 
   const isLoadingWeek = calendarQueries.some((q) => q.isLoading);
   const isFetchingWeek = calendarQueries.some((q) => q.isFetching);
