@@ -30,7 +30,10 @@ export default function SolutionsHospitalsPage() {
         <FeatureGrid items={ITEMS} columns={2} />
       </SectionContainer>
       <SectionContainer py={6}>
-        <DemoCta title="Discuss hospital requirements" />
+        <DemoCta
+          title="Discuss your hospital requirements"
+          subtitle="Talk to our team about department workflows, governance, access control, and deployment for your hospital."
+        />
       </SectionContainer>
     </>
   );

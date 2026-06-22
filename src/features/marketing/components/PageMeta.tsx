@@ -6,12 +6,14 @@ interface PageMetaProps {
   description?: string;
   path?: string;
   noIndex?: boolean;
+  ogImage?: string;
 }
 
-export function PageMeta({ title, description, path = "", noIndex = false }: PageMetaProps) {
+export function PageMeta({ title, description, path = "", noIndex = false, ogImage }: PageMetaProps) {
   const fullTitle = title.includes("Solidcare") ? title : `${title} | Solidcare`;
   const desc = description ?? SITE.description;
   const canonical = `${SITE.domain}${path}`;
+  const image = ogImage ?? `${SITE.domain}/og.png`;
 
   useEffect(() => {
     document.title = fullTitle;
@@ -32,9 +34,13 @@ export function PageMeta({ title, description, path = "", noIndex = false }: Pag
     setMeta("og:url", canonical, "property");
     setMeta("og:type", "website", "property");
     setMeta("og:site_name", SITE.name, "property");
+    setMeta("og:image", image, "property");
+    setMeta("og:image:width", "1200", "property");
+    setMeta("og:image:height", "630", "property");
     setMeta("twitter:card", "summary_large_image");
     setMeta("twitter:title", fullTitle);
     setMeta("twitter:description", desc);
+    setMeta("twitter:image", image);
 
     let canonicalEl = document.querySelector('link[rel="canonical"]');
     if (!canonicalEl) {
@@ -55,7 +61,7 @@ export function PageMeta({ title, description, path = "", noIndex = false }: Pag
     } else if (robotsEl) {
       robotsEl.remove();
     }
-  }, [fullTitle, desc, canonical, noIndex]);
+  }, [fullTitle, desc, canonical, noIndex, image]);
 
   return null;
 }

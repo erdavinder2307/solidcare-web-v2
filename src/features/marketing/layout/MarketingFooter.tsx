@@ -18,6 +18,12 @@ const FOOTER_LINKS = {
     { label: "About Us", path: "/about" },
     { label: "Contact", path: "/contact" },
     { label: "Careers", path: "/careers" },
+    { label: "Changelog", path: "/changelog" },
+  ],
+  resources: [
+    { label: "Blog", path: "/blog" },
+    { label: "Documentation", path: "/docs" },
+    { label: "System Status", path: "/status" },
   ],
   legal: [
     { label: "Privacy Policy", path: "/privacy" },
@@ -62,17 +68,18 @@ export function MarketingFooter() {
     <Box component="footer" sx={{ bgcolor: "grey.900", color: "grey.300", pt: 8, pb: 4 }}>
       <Container maxWidth="lg">
         <Grid container spacing={4}>
-          <Grid size={{ xs: 12, md: 4 }}>
+          {/* Brand column */}
+          <Grid size={{ xs: 12, md: 3 }}>
             <Box sx={{ "& a": { color: "inherit" } }}>
               <SolidcareLogo size="sm" />
             </Box>
-            <Typography variant="body2" sx={{ mt: 2, mb: 2, maxWidth: 320, color: "grey.400" }}>
+            <Typography variant="body2" sx={{ mt: 2, mb: 2, maxWidth: 280, color: "grey.400" }}>
               {SITE.description}
             </Typography>
             <Stack spacing={0.5}>
               <Typography variant="body2">{COMPANY.email}</Typography>
               <Typography variant="body2">{COMPANY.phone}</Typography>
-              <Typography variant="body2" sx={{ maxWidth: 280 }}>
+              <Typography variant="body2" sx={{ maxWidth: 260 }}>
                 {COMPANY.address}
               </Typography>
             </Stack>
@@ -80,28 +87,33 @@ export function MarketingFooter() {
               <LinkedInIcon />
             </Link>
           </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 2 }}>
+
+          {/* Link columns */}
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
             <FooterColumn title="Product" links={FOOTER_LINKS.product} />
           </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 2 }}>
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
             <FooterColumn title="Solutions" links={FOOTER_LINKS.solutions} />
           </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 2 }}>
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
             <FooterColumn title="Company" links={FOOTER_LINKS.company} />
           </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 2 }}>
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
+            <FooterColumn title="Resources" links={FOOTER_LINKS.resources} />
+          </Grid>
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
             <FooterColumn title="Legal" links={FOOTER_LINKS.legal} />
           </Grid>
         </Grid>
 
-        <Box sx={{ borderTop: "1px solid", borderColor: "grey.800", mt: 6, pt: 3 }}>
-          <Typography variant="caption" color="grey.500" display="block">
+        <Box sx={{ borderTop: "1px solid", borderColor: "grey.800", mt: 6, pt: 3, display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1, justifyContent: "space-between", alignItems: { sm: "center" } }}>
+          <Typography variant="caption" color="grey.500">
             © {new Date().getFullYear()} {COMPANY.legalName}. All rights reserved.
           </Typography>
-          <Typography variant="caption" color="grey.500">
-            {COMPANY.productLine}{" "}
-            <Link href={COMPANY.parentWebsite} target="_blank" rel="noopener noreferrer" color="grey.400">
-              solidevelectrosoft.com
+          <Typography variant="caption" color="grey.600">
+            A product by{" "}
+            <Link href={COMPANY.parentWebsite} target="_blank" rel="noopener noreferrer" color="grey.600" underline="hover">
+              Solidev Electrosoft
             </Link>
           </Typography>
         </Box>

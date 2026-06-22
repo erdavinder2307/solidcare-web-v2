@@ -30,7 +30,10 @@ export default function SolutionsChainsPage() {
         <FeatureGrid items={ITEMS} columns={2} />
       </SectionContainer>
       <SectionContainer py={6}>
-        <DemoCta title="Plan your chain rollout" />
+        <DemoCta
+          title="Plan your healthcare chain rollout"
+          subtitle="Discuss multi-clinic architecture, centralized governance, and how Solidcare scales across your network."
+        />
       </SectionContainer>
     </>
   );

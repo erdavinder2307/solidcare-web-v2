@@ -7,6 +7,8 @@ export const queryClient = new QueryClient({
       gcTime: 1000 * 60 * 10,      // 10 minutes
       retry: (failureCount, error: any) => {
         if (error?.response?.status === 401 || error?.response?.status === 403) return false;
+        // Don't retry network errors (timeout, no response from server).
+        if (!error?.response) return false;
         return failureCount < 2;
       },
       refetchOnWindowFocus: false,

@@ -1,15 +1,30 @@
 import { Box, useTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import { NotificationDrawer } from "./NotificationDrawer";
+import { CommandPalette } from "./CommandPalette";
+import { useUIStore } from "@/app/store/uiStore";
 import { useLayoutDimensions } from "@/shared/layout/useLayoutDimensions";
 import { densityTokens } from "@/lib/theme/tokens";
 
 export function AppShell() {
   const { topbarHeight } = useLayoutDimensions();
+  const toggleCommandPalette = useUIStore((s) => s.toggleCommandPalette);
   const theme = useTheme();
   const pagePadding = densityTokens[theme.solidcare.density].pagePadding;
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        toggleCommandPalette();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [toggleCommandPalette]);
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
@@ -37,6 +52,7 @@ export function AppShell() {
 
       <Sidebar />
       <NotificationDrawer />
+      <CommandPalette />
 
       <Box
         component="main"

@@ -7,8 +7,7 @@ interface SolidcareLogoProps {
 }
 
 export function SolidcareLogo({ size = "md" }: SolidcareLogoProps) {
-  const iconSize = size === "sm" ? 32 : 40;
-  const titleVariant = size === "sm" ? "subtitle1" : "h6";
+  const iconSize = size === "sm" ? 28 : 36;
 
   return (
     <Box
@@ -23,31 +22,26 @@ export function SolidcareLogo({ size = "md" }: SolidcareLogoProps) {
       }}
     >
       <Box
+        component="img"
+        src="/appIcon.png"
+        alt="Solidcare"
         sx={{
           width: iconSize,
           height: iconSize,
-          borderRadius: 1.5,
-          bgcolor: "primary.main",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          objectFit: "contain",
           flexShrink: 0,
+          display: "block",
         }}
+      />
+      <Typography
+        variant={size === "sm" ? "subtitle1" : "h6"}
+        fontWeight={700}
+        color="primary.main"
+        lineHeight={1}
+        sx={{ whiteSpace: "nowrap" }}
       >
-        <Typography variant="body1" fontWeight={700} color="white" lineHeight={1}>
-          S
-        </Typography>
-      </Box>
-      <Box>
-        <Typography variant={titleVariant} fontWeight={700} color="primary.main" lineHeight={1.2}>
-          Solidcare
-        </Typography>
-        {size === "md" && (
-          <Typography variant="caption" color="text.secondary" lineHeight={1.2}>
-            Healthcare Platform
-          </Typography>
-        )}
-      </Box>
+        Solidcare
+      </Typography>
     </Box>
   );
 }

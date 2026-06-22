@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid2";
 export interface FeatureItem {
   title: string;
   description: string;
+  icon?: React.ElementType;
 }
 
 interface FeatureGridProps {
@@ -30,27 +31,31 @@ export function FeatureGrid({ title, subtitle, items, columns = 3 }: FeatureGrid
         </Typography>
       )}
       <Grid container spacing={3}>
-        {items.map((item) => (
-          <Grid key={item.title} size={colSize}>
-            <Box
-              sx={{
-                p: 3,
-                height: "100%",
-                borderRadius: 2,
-                bgcolor: "background.paper",
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Typography variant="h6" fontWeight={600} gutterBottom>
-                {item.title}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {item.description}
-              </Typography>
-            </Box>
-          </Grid>
-        ))}
+        {items.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Grid key={item.title} size={colSize}>
+              <Box
+                sx={{
+                  p: 3,
+                  height: "100%",
+                  borderRadius: 2,
+                  bgcolor: "background.paper",
+                  border: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                {Icon && <Icon sx={{ color: "primary.main", mb: 1.5, fontSize: 28 }} />}
+                <Typography variant="h6" fontWeight={600} gutterBottom>
+                  {item.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {item.description}
+                </Typography>
+              </Box>
+            </Grid>
+          );
+        })}
       </Grid>
     </Box>
   );

@@ -46,6 +46,12 @@ export interface PaginatedAppointments {
   total_pages: number;
 }
 
+export interface AppointmentReschedule {
+  appointment_date: string;
+  start_time: string;
+  appointment_type?: AppointmentType;
+}
+
 export const appointmentsApi = {
   list: (params?: {
     page?: number;
@@ -62,6 +68,9 @@ export const appointmentsApi = {
 
   create: (data: AppointmentCreate) =>
     apiClient.post<Appointment>("/appointments", data).then((r) => r.data),
+
+  reschedule: (id: string, data: AppointmentReschedule) =>
+    apiClient.patch<Appointment>(`/appointments/${id}`, data).then((r) => r.data),
 
   updateStatus: (id: string, status: AppointmentStatus) =>
     apiClient.patch<Appointment>(`/appointments/${id}/status`, { status }).then((r) => r.data),

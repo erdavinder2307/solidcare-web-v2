@@ -48,7 +48,9 @@ const DoctorDetailPage = lazy(() => import("@/features/doctors/pages/DoctorDetai
 
 const AppointmentListPage = lazy(() => import("@/features/appointments/pages/AppointmentListPage"));
 const AppointmentBookPage = lazy(() => import("@/features/appointments/pages/AppointmentBookPage"));
+const AppointmentCalendarPage = lazy(() => import("@/features/appointments/pages/AppointmentCalendarPage"));
 const QueueDashboardPage = lazy(() => import("@/features/appointments/pages/QueueDashboardPage"));
+const QueueBoardPage = lazy(() => import("@/features/appointments/pages/QueueBoardPage"));
 
 const DoctorWorkspace = lazy(() => import("@/features/clinical/pages/workspace/DoctorWorkspace"));
 const DoctorTodayPage = lazy(() => import("@/features/clinical/pages/workspace/DoctorTodayPage"));
@@ -111,6 +113,7 @@ export function Router() {
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/mfa" element={<MfaPage />} />
+          <Route path="/queue/board" element={<QueueBoardPage />} />
 
           <Route element={<AuthGuard />}>
             <Route element={<AppShell />}>
@@ -139,6 +142,7 @@ export function Router() {
               <Route path="/doctors/:doctorId" element={<RoutePermission permission="doctor:read"><DoctorDetailPage /></RoutePermission>} />
 
               <Route path="/appointments" element={<RoutePermission permission="appointment:read"><AppointmentListPage /></RoutePermission>} />
+              <Route path="/appointments/calendar" element={<RoutePermission permission="appointment:read"><AppointmentCalendarPage /></RoutePermission>} />
               <Route path="/appointments/new" element={<RoutePermission permission="appointment:create"><AppointmentBookPage /></RoutePermission>} />
               <Route path="/appointments/queue" element={<RoutePermission permission="appointment:read"><QueueDashboardPage /></RoutePermission>} />
 

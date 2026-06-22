@@ -7,20 +7,20 @@ import { DemoCta } from "../components/DemoCta";
 
 const LAYERS = [
   {
-    title: "Experience layer",
-    description: "React web application with role-based workspaces for reception, clinical, billing, and administration.",
+    title: "Role-based workspaces",
+    description: "Separate, purpose-built views for reception, clinical, billing, and administration staff — each team sees exactly what they need.",
   },
   {
-    title: "Application layer",
-    description: "FastAPI modular monolith with REST APIs, RBAC enforcement, and healthcare domain modules.",
+    title: "Connected clinical modules",
+    description: "Patient registration, appointments, consultations, prescriptions, lab orders, and billing share a single patient record — no duplicate data entry.",
   },
   {
-    title: "Data layer",
-    description: "PostgreSQL with async SQLAlchemy, Alembic migrations, and structured clinical and billing records.",
+    title: "Secure data layer",
+    description: "Structured clinical and financial records with full audit history, soft-delete retention, and encrypted storage for patient documents.",
   },
   {
-    title: "Cloud infrastructure",
-    description: "Azure App Service, PostgreSQL Flexible Server, and Blob Storage — designed for secure healthcare workloads.",
+    title: "Cloud-native on Azure India",
+    description: "Deployed on Microsoft Azure with data residency in Indian regions — scalable infrastructure designed for healthcare workloads.",
   },
 ];
 
@@ -45,7 +45,7 @@ export default function PlatformPage() {
         subtitle="Solidcare connects front-office, clinical, and back-office workflows in a single system — reducing fragmentation and improving operational visibility."
       />
       <SectionContainer>
-        <FeatureGrid title="Platform layers" items={LAYERS} columns={2} />
+        <FeatureGrid title="How Solidcare is built for your team" items={LAYERS} columns={2} />
       </SectionContainer>
       <SectionContainer bgcolor="grey.50">
         <FeatureGrid

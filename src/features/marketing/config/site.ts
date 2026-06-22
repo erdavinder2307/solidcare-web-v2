@@ -1,4 +1,4 @@
-/** Public website constants — verified Solidev Electrosoft contact details. */
+/** Public website constants — Solidev Electrosoft contact details. */
 
 export const SITE = {
   name: "Solidcare",

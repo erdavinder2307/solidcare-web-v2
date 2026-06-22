@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   Button,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -8,18 +9,23 @@ import {
   TableHead,
   TableRow,
   TablePagination,
+  Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
+import EditCalendarOutlinedIcon from "@mui/icons-material/EditCalendarOutlined";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { appointmentsApi } from "../api/appointmentsApi";
+import { appointmentsApi, type Appointment } from "../api/appointmentsApi";
 import { useAuthStore } from "@/app/store/authStore";
 import { usePatientNameMap, resolvePatientName } from "@/shared/hooks/usePatientNameMap";
 import { useDoctorNameMap } from "@/shared/hooks/useDoctorNameMap";
 import { formatDate } from "@/shared/utils/formatters";
 import { PageHeader, PageLayout } from "@/shared/layout";
 import { AppointmentStatusBadge, EmptyState, Surface } from "@/shared/ui";
+import { RescheduleModal } from "../components/RescheduleModal";
+
+const RESCHEDULABLE_STATUSES = new Set(["scheduled", "confirmed"]);
 
 export default function AppointmentListPage() {
   const navigate = useNavigate();
@@ -28,6 +34,7 @@ export default function AppointmentListPage() {
   const { doctorNames } = useDoctorNameMap();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [rescheduleTarget, setRescheduleTarget] = useState<Appointment | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["appointments", { page: page + 1, page_size: rowsPerPage }],
@@ -67,6 +74,7 @@ export default function AppointmentListPage() {
               <TableCell>Type</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Complaint</TableCell>
+              {can("appointment:update") && <TableCell align="right">Actions</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -84,11 +92,26 @@ export default function AppointmentListPage() {
                   <AppointmentStatusBadge status={appt.status} />
                 </TableCell>
                 <TableCell>{appt.chief_complaint ?? "—"}</TableCell>
+                {can("appointment:update") && (
+                  <TableCell align="right">
+                    {RESCHEDULABLE_STATUSES.has(appt.status) && (
+                      <Tooltip title="Reschedule">
+                        <IconButton
+                          size="small"
+                          onClick={() => setRescheduleTarget(appt)}
+                          aria-label="Reschedule appointment"
+                        >
+                          <EditCalendarOutlinedIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </TableCell>
+                )}
               </TableRow>
             ))}
             {!isLoading && appointments.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} sx={{ p: 0, border: 0 }}>
+                <TableCell colSpan={can("appointment:update") ? 9 : 8} sx={{ p: 0, border: 0 }}>
                   <EmptyState
                     icon={<EventOutlinedIcon sx={{ fontSize: 48 }} />}
                     title="No appointments scheduled"
@@ -119,6 +142,12 @@ export default function AppointmentListPage() {
           }}
         />
       </TableContainer>
+
+      <RescheduleModal
+        appointment={rescheduleTarget}
+        open={!!rescheduleTarget}
+        onClose={() => setRescheduleTarget(null)}
+      />
     </PageLayout>
   );
 }

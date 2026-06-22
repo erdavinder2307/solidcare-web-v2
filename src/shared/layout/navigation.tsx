@@ -4,6 +4,7 @@ import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
 import QueuePlayNextOutlinedIcon from "@mui/icons-material/QueuePlayNextOutlined";
 import MedicalServicesOutlinedIcon from "@mui/icons-material/MedicalServicesOutlined";
 import TodayOutlinedIcon from "@mui/icons-material/TodayOutlined";
@@ -57,7 +58,13 @@ export const NAV_GROUPS: NavGroupConfig[] = [
         icon: <CalendarMonthOutlinedIcon />,
         path: "/appointments",
         permission: "appointment:read",
-        excludePrefixes: ["/appointments/queue"],
+        excludePrefixes: ["/appointments/queue", "/appointments/calendar"],
+      },
+      {
+        label: "Calendar",
+        icon: <DateRangeOutlinedIcon />,
+        path: "/appointments/calendar",
+        permission: "appointment:read",
       },
       {
         label: "Waiting Room",

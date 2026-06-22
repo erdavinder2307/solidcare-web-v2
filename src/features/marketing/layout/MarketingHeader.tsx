@@ -77,7 +77,7 @@ export function MarketingHeader() {
         </ListItemButton>
       </List>
       <Box sx={{ px: 2, pt: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-        <Button component={RouterLink} to="/login" variant="outlined" fullWidth onClick={() => setMobileOpen(false)}>
+        <Button component={RouterLink} to="/login" variant="outlined" fullWidth color="primary" onClick={() => setMobileOpen(false)}>
           Login
         </Button>
         <Button
@@ -135,13 +135,13 @@ export function MarketingHeader() {
               </Menu>
               <NavLink to={NAV.features.path} label={NAV.features.label} />
               <NavLink to={NAV.pricing.path} label={NAV.pricing.label} />
+              <NavLink to={NAV.security.path} label={NAV.security.label} />
               <NavLink to={NAV.about.path} label={NAV.about.label} />
-              <NavLink to={NAV.security.path} label="Resources" />
               <NavLink to={NAV.contact.path} label={NAV.contact.label} />
             </Box>
 
             <Box sx={{ display: { xs: "none", lg: "flex" }, alignItems: "center", gap: 1 }}>
-              <Button component={RouterLink} to="/login" variant="text" color="inherit">
+              <Button component={RouterLink} to="/login" variant="outlined" color="inherit" sx={{ borderColor: "divider" }}>
                 Login
               </Button>
               <Button

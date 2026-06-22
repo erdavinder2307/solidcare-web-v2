@@ -21,6 +21,7 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import DensityMediumOutlinedIcon from "@mui/icons-material/DensityMediumOutlined";
 import DensitySmallOutlinedIcon from "@mui/icons-material/DensitySmallOutlined";
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useQuery } from "@tanstack/react-query";
 import { useUIStore } from "@/app/store/uiStore";
 import { useAuthStore } from "@/app/store/authStore";
@@ -36,6 +37,7 @@ export function Topbar() {
     setMobileNavOpen,
     mobileNavOpen,
     toggleNotificationDrawer,
+    toggleCommandPalette,
     density,
     setDensity,
   } = useUIStore();
@@ -112,6 +114,17 @@ export function Topbar() {
         )}
 
         <Box flexGrow={1} />
+
+        <Tooltip title="Search and actions (Cmd+K)">
+          <IconButton
+            size="small"
+            aria-label="Open command palette"
+            sx={{ color: "text.secondary" }}
+            onClick={toggleCommandPalette}
+          >
+            <SearchOutlinedIcon />
+          </IconButton>
+        </Tooltip>
 
         {/* Notifications — opens right-anchored drawer */}
         <Tooltip title="Notifications">
