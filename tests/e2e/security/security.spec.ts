@@ -8,6 +8,8 @@ import {
 import { loginViaApi } from "../../helpers/api-helper";
 import { TEST_USERS } from "../../test-data/users";
 
+const API_URL = process.env.PLAYWRIGHT_API_URL ?? "http://localhost:8000/api/v1";
+
 test.describe("Security Testing @security @critical", () => {
   const findings: SecurityFinding[] = [];
 
@@ -36,7 +38,7 @@ test.describe("Security Testing @security @critical", () => {
   });
 
   test("invalid JWT rejected by API", async ({ request }) => {
-    const res = await request.get("http://localhost:8000/api/v1/patients", {
+    const res = await request.get(`${API_URL}/patients`, {
       headers: { Authorization: "Bearer invalid.token.here" },
     });
     expect([401, 403]).toContain(res.status());
@@ -45,7 +47,7 @@ test.describe("Security Testing @security @critical", () => {
   test("billing clerk cannot create patients via API", async ({ request }) => {
     try {
       const token = await loginViaApi(TEST_USERS.billingClerk.email, TEST_USERS.billingClerk.password);
-      const res = await request.post("http://localhost:8000/api/v1/patients", {
+      const res = await request.post(`${API_URL}/patients`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { first_name: "Test", last_name: "User", phone: "9999999999", gender: "male" },
       });

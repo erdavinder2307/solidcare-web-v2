@@ -1,5 +1,8 @@
 import { test, expect } from "../../fixtures/test-fixtures";
 
+const API_URL = process.env.PLAYWRIGHT_API_URL ?? "http://localhost:8000/api/v1";
+const API_BASE = API_URL.replace(/\/api\/v1$/, "");
+
 test.describe("Smoke Tests @smoke @critical", () => {
   test("application loads login page", async ({ loginPage }) => {
     await loginPage.goto();
@@ -13,7 +16,8 @@ test.describe("Smoke Tests @smoke @critical", () => {
   });
 
   test("API health check", async ({ request }) => {
-    const res = await request.get("http://localhost:8000/health");
+    const healthUrl = process.env.PLAYWRIGHT_API_HEALTH ?? `${API_BASE}/health`;
+    const res = await request.get(healthUrl);
     expect(res.ok()).toBeTruthy();
   });
 
