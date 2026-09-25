@@ -21,6 +21,7 @@ import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
 import { useAuthStore } from "@/app/store/authStore";
 import { authApi } from "../api/authApi";
 import { DevQuickLogin } from "../components/DevQuickLogin";
+import { getLoginErrorMessage } from "../utils/loginErrorMessage";
 import { PageMeta } from "@/features/marketing/components/PageMeta";
 
 interface LoginLocationState {
@@ -112,7 +113,7 @@ export default function LoginPage() {
 
         {loginMutation.isError && (
           <Alert severity="error" sx={{ mb: 2 }}>
-            {(loginMutation.error as any)?.response?.data?.detail || "Invalid credentials. Please try again."}
+            {getLoginErrorMessage(loginMutation.error)}
           </Alert>
         )}
 
