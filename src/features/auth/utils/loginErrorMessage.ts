@@ -6,6 +6,12 @@ export const LOGIN_ERROR_MESSAGES = {
   invalidCredentials: "Invalid credentials. Please try again.",
 } as const;
 
+/** The API answers 503 with this code while a stopped database is waking up. */
+export function isDatabaseStartingError(error: unknown): boolean {
+  const response = (error as { response?: { status?: number; data?: { error_code?: unknown } } } | null)?.response;
+  return response?.status === 503 && response.data?.error_code === "DB_STARTING";
+}
+
 /**
  * Text for the login page's error alert. A request that got no response (network down,
  * CORS block, timeout) or a 5xx must not be reported as wrong credentials.
