@@ -53,7 +53,11 @@ export default function LoginPage() {
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   // Start a stopped database while the user types; the API wakes it and answers at once.
+  // The ref keeps StrictMode's second effect run (dev only) from sending a second wake.
+  const wakeSent = React.useRef(false);
   React.useEffect(() => {
+    if (wakeSent.current) return;
+    wakeSent.current = true;
     void databaseHealthApi.wake();
   }, []);
 

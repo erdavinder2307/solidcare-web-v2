@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -32,9 +33,9 @@ const tokens = {
   mfa_token: null,
 };
 
-function renderLogin() {
+function renderLogin({ strict = false } = {}) {
   const client = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
-  render(
+  const page = (
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={["/login"]}>
         <Routes>
@@ -44,6 +45,7 @@ function renderLogin() {
       </MemoryRouter>
     </QueryClientProvider>
   );
+  render(strict ? <StrictMode>{page}</StrictMode> : page);
 }
 
 async function signIn() {
@@ -67,6 +69,11 @@ afterEach(() => vi.useRealTimers());
 describe("LoginPage while the database wakes", () => {
   it("wakes the database once when the page opens", () => {
     renderLogin();
+    expect(wake).toHaveBeenCalledTimes(1);
+  });
+
+  it("wakes the database once under StrictMode (dev server)", () => {
+    renderLogin({ strict: true });
     expect(wake).toHaveBeenCalledTimes(1);
   });
 
