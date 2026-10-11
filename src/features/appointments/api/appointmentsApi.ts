@@ -61,6 +61,7 @@ export const appointmentsApi = {
     patient_id?: string;
     appointment_date?: string;
     status?: AppointmentStatus;
+    search?: string;
   }) => apiClient.get<PaginatedAppointments>("/appointments", { params }).then((r) => r.data),
 
   get: (id: string) =>

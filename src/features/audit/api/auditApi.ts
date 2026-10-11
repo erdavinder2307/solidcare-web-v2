@@ -16,4 +16,9 @@ export interface AuditLog {
 export const auditApi = {
   list: (params?: { page?: number; page_size?: number; resource_type?: string; action?: string }) =>
     apiClient.get("/audit", { params }).then((r) => r.data),
+
+  exportCsv: (params?: { resource_type?: string; action?: string; from_date?: string; to_date?: string }) =>
+    apiClient
+      .get<Blob>("/audit/export", { params, responseType: "blob" })
+      .then((r) => r.data),
 };

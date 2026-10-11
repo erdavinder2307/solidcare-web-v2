@@ -24,13 +24,14 @@ import {
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DownloadIcon from "@mui/icons-material/Download";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { patientDocumentsApi, DocumentType } from "../../api/patientsApi";
+import { patientDocumentsApi, DocumentType, type PatientDocument } from "../../api/patientsApi";
 import { useAuthStore } from "@/app/store/authStore";
 import { formatDateTime } from "@/shared/utils/formatters";
-import { EmptyState } from "@/shared/ui";
+import { EmptyState, DocumentViewerDialog, isPreviewable } from "@/shared/ui";
 
 const DOC_TYPE_LABELS: Record<DocumentType, string> = {
   aadhaar: "Aadhaar",
@@ -61,6 +62,7 @@ export default function PatientDocumentsTab() {
   const [docType, setDocType] = useState<DocumentType>("other");
   const [notes, setNotes] = useState("");
   const [fileError, setFileError] = useState<string | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<PatientDocument | null>(null);
 
   const { data: docs = [], isLoading } = useQuery({
     queryKey: ["patient-documents", patientId],
@@ -139,7 +141,18 @@ export default function PatientDocumentsTab() {
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={1}>
                       <InsertDriveFileOutlinedIcon fontSize="small" color="action" />
-                      <Typography variant="body2" noWrap sx={{ maxWidth: 220 }}>{doc.file_name}</Typography>
+                      {doc.download_url && isPreviewable(doc.content_type) ? (
+                        <Typography
+                          variant="body2"
+                          noWrap
+                          sx={{ maxWidth: 220, color: "primary.main", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+                          onClick={() => setPreviewDoc(doc)}
+                        >
+                          {doc.file_name}
+                        </Typography>
+                      ) : (
+                        <Typography variant="body2" noWrap sx={{ maxWidth: 220 }}>{doc.file_name}</Typography>
+                      )}
                     </Box>
                   </TableCell>
                   <TableCell>
@@ -155,6 +168,13 @@ export default function PatientDocumentsTab() {
                     <Typography variant="caption" color="text.secondary">{doc.notes ?? "—"}</Typography>
                   </TableCell>
                   <TableCell align="right">
+                    {doc.download_url && isPreviewable(doc.content_type) && (
+                      <Tooltip title="Preview">
+                        <IconButton size="small" onClick={() => setPreviewDoc(doc)}>
+                          <VisibilityOutlinedIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     {doc.download_url && (
                       <Tooltip title="Download">
                         <IconButton size="small" href={doc.download_url} target="_blank" rel="noopener noreferrer">
@@ -243,6 +263,15 @@ export default function PatientDocumentsTab() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Inline document viewer */}
+      <DocumentViewerDialog
+        open={!!previewDoc}
+        onClose={() => setPreviewDoc(null)}
+        fileName={previewDoc?.file_name ?? ""}
+        contentType={previewDoc?.content_type ?? null}
+        url={previewDoc?.download_url ?? null}
+      />
     </Box>
   );
 }
