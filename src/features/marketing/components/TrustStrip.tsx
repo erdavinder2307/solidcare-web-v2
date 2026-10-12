@@ -19,8 +19,8 @@ const ITEMS = [
   },
   {
     icon: HubOutlinedIcon,
-    title: "Interoperability ready",
-    description: "Architected for future ABDM and FHIR R4 integration.",
+    title: "Interoperability planned",
+    description: "ABDM integration planned, with FHIR R4 to follow.",
   },
   {
     icon: CloudOutlinedIcon,

@@ -16,7 +16,7 @@ describe("StatsBar", () => {
         expect(screen.getByText(/integrated clinical modules/i)).toBeInTheDocument();
         expect(screen.getByText(/OPD workflow/i)).toBeInTheDocument();
         expect(screen.getByText(/data residency/i)).toBeInTheDocument();
-        expect(screen.getByText(/ABDM-ready/i)).toBeInTheDocument();
+        expect(screen.getByText(/ABDM integration planned/i)).toBeInTheDocument();
     });
 
     it("renders the 12-module stat value", () => {
@@ -34,8 +34,9 @@ describe("StatsBar", () => {
         expect(screen.getByText("End-to-end")).toBeInTheDocument();
     });
 
-    it("renders the ABDM-ready value", () => {
+    it("says ABDM integration is planned, not ready", () => {
         render(<StatsBar />, { wrapper: Wrapper });
-        expect(screen.getByText("ABDM-ready")).toBeInTheDocument();
+        expect(screen.getByText("Planned")).toBeInTheDocument();
+        expect(screen.queryByText(/ABDM-ready/i)).not.toBeInTheDocument();
     });
 });

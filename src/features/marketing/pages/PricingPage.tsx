@@ -259,7 +259,7 @@ export default function PricingPage() {
               "Regular backups",
               "RBAC for staff roles",
               "Immutable audit logging",
-              "ABDM-ready architecture",
+              "ABDM integration planned",
             ].map((item) => (
               <Grid key={item} size={{ xs: 12, sm: 6, md: 4 }}>
                 <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>

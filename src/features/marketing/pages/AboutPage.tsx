@@ -45,7 +45,7 @@ const VALUES = [
     icon: FlagOutlinedIcon,
     title: "Indian healthcare context, not bolted on",
     description:
-      "UHID patient identity, ABDM readiness, GST-compliant billing, and OPD queue management are first-class concerns — not afterthoughts.",
+      "UHID patient identity, GST-compliant billing, and OPD queue management are first-class concerns — not afterthoughts. ABDM integration planned.",
   },
   {
     icon: VerifiedOutlinedIcon,
@@ -143,8 +143,8 @@ export default function AboutPage() {
           every patient visit.
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720, fontSize: "1rem", lineHeight: 1.8 }}>
-          We built it for Indian healthcare — with UHID patient identity, ABDM readiness, GST-compliant
-          invoicing, and queue-token workflows that reflect how Indian OPD clinics actually operate. And we
+          We built it for Indian healthcare — with UHID patient identity, GST-compliant invoicing, and
+          queue-token workflows that reflect how Indian OPD clinics actually operate (ABDM integration planned). And we
           built it with enterprise discipline: RBAC, MFA, immutable audit logging, and data residency in
           Azure India regions from the first deployment.
         </Typography>

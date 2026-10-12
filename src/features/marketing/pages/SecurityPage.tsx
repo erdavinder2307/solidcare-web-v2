@@ -87,8 +87,8 @@ export default function SecurityPage() {
       <SectionContainer>
         <FeatureGrid items={SECURITY_FEATURES} columns={2} />
         <Typography variant="body2" color="text.secondary" sx={{ mt: 4, maxWidth: 720 }}>
-          Solidcare is architected to support future integration with India&apos;s ABDM ecosystem and FHIR-based
-          interoperability. HIPAA-aligned infrastructure patterns are planned for US market expansion.
+          ABDM integration planned: Solidcare does not yet connect to India&apos;s ABDM ecosystem, and FHIR-based
+          interoperability is on the roadmap. HIPAA-aligned infrastructure patterns are planned for US market expansion.
           Formal third-party security certifications (ISO 27001, SOC 2) are on the product roadmap. We do not
           claim certification until formally achieved.
         </Typography>

@@ -18,13 +18,8 @@ const FOOTER_LINKS = {
     { label: "About Us", path: "/about" },
     { label: "Contact", path: "/contact" },
     { label: "Careers", path: "/careers" },
-    { label: "Changelog", path: "/changelog" },
   ],
-  resources: [
-    { label: "Blog", path: "/blog" },
-    { label: "Documentation", path: "/docs" },
-    { label: "System Status", path: "/status" },
-  ],
+  // Changelog, Blog, Documentation and System Status come back when those pages exist.
   legal: [
     { label: "Privacy Policy", path: "/privacy" },
     { label: "Terms & Conditions", path: "/terms" },
@@ -89,19 +84,16 @@ export function MarketingFooter() {
           </Grid>
 
           {/* Link columns */}
-          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 4 }}>
             <FooterColumn title="Product" links={FOOTER_LINKS.product} />
           </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 4 }}>
             <FooterColumn title="Solutions" links={FOOTER_LINKS.solutions} />
           </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 4 }}>
             <FooterColumn title="Company" links={FOOTER_LINKS.company} />
           </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
-            <FooterColumn title="Resources" links={FOOTER_LINKS.resources} />
-          </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 9 / 5 }}>
+          <Grid size={{ xs: 6, sm: 3, md: 9 / 4 }}>
             <FooterColumn title="Legal" links={FOOTER_LINKS.legal} />
           </Grid>
         </Grid>

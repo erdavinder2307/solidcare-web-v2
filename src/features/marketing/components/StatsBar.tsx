@@ -24,8 +24,8 @@ const STATS = [
     },
     {
         icon: HubOutlinedIcon,
-        value: "ABDM-ready",
-        label: "Architected for India's digital health ecosystem",
+        value: "Planned",
+        label: "ABDM integration planned — India's digital health ecosystem",
     },
 ] as const;
 
