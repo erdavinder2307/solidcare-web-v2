@@ -29,7 +29,7 @@ const FEATURES = [
   { icon: HistoryOutlinedIcon, title: "Audit logging", description: "Append-only audit trail for sensitive actions and PHI access patterns." },
   { icon: AccountTreeOutlinedIcon, title: "Multi-clinic admin", description: "Organization and clinic management for growing provider networks." },
   { icon: NotificationsNoneOutlinedIcon, title: "Notifications", description: "In-app notification feed with infrastructure for SMS and email dispatch." },
-  { icon: ApiOutlinedIcon, title: "Future-ready integrations", description: "Architected for ABDM/ABHA, FHIR R4, and telemedicine expansion." },
+  { icon: ApiOutlinedIcon, title: "Planned integrations", description: "ABDM integration planned; FHIR R4 and telemedicine are on the roadmap." },
 ];
 
 export default function FeaturesPage() {
