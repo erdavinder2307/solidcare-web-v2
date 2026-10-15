@@ -21,7 +21,10 @@ import { useNavigate, useLocation, Link as RouterLink } from "react-router-dom";
 import { useAuthStore } from "@/app/store/authStore";
 import { authApi } from "../api/authApi";
 import { DevQuickLogin } from "../components/DevQuickLogin";
-import { getLoginErrorMessage } from "../utils/loginErrorMessage";
+import { DatabaseWaitCard } from "../components/DatabaseWaitCard";
+import { databaseHealthApi } from "../api/databaseHealthApi";
+import { useDatabaseWait } from "../hooks/useDatabaseWait";
+import { getLoginErrorMessage, isDatabaseStartingError } from "../utils/loginErrorMessage";
 import { PageMeta } from "@/features/marketing/components/PageMeta";
 
 interface LoginLocationState {
@@ -49,9 +52,30 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
+  // Start a stopped database while the user types; the API wakes it and answers at once.
+  // The ref keeps StrictMode's second effect run (dev only) from sending a second wake.
+  const wakeSent = React.useRef(false);
+  React.useEffect(() => {
+    if (wakeSent.current) return;
+    wakeSent.current = true;
+    void databaseHealthApi.wake();
+  }, []);
+
+  // While the database wakes, sign in again with the same details as soon as it is ready.
+  const databaseWait = useDatabaseWait(() => {
+    if (!loginMutation.isPending && loginMutation.variables) {
+      loginMutation.mutate(loginMutation.variables);
+    }
+  });
+
   const loginMutation = useMutation({
     mutationFn: authApi.login,
+    onError: (error) => {
+      if (isDatabaseStartingError(error)) databaseWait.start();
+      else databaseWait.stop();
+    },
     onSuccess: (data) => {
+      databaseWait.stop();
       if (data.requires_mfa) {
         navigate("/mfa", { state: { mfa_token: data.mfa_token } });
         return;
@@ -111,7 +135,7 @@ export default function LoginPage() {
           Sign in to your account to continue
         </Typography>
 
-        {loginMutation.isError && (
+        {loginMutation.isError && !isDatabaseStartingError(loginMutation.error) && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {getLoginErrorMessage(loginMutation.error)}
           </Alert>
@@ -148,16 +172,27 @@ export default function LoginPage() {
             }}
             sx={{ mb: 3 }}
           />
-          <Button
-            fullWidth
-            type="submit"
-            variant="contained"
-            size="large"
-            disabled={loginMutation.isPending}
-            sx={{ py: 1.25 }}
-          >
-            {loginMutation.isPending ? <CircularProgress size={22} color="inherit" /> : "Sign in"}
-          </Button>
+          {databaseWait.waiting || databaseWait.timedOut ? (
+            <DatabaseWaitCard
+              elapsedMs={databaseWait.elapsedMs}
+              timedOut={databaseWait.timedOut}
+              onTryAgain={() => {
+                databaseWait.stop();
+                if (loginMutation.variables) loginMutation.mutate(loginMutation.variables);
+              }}
+            />
+          ) : (
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              size="large"
+              disabled={loginMutation.isPending}
+              sx={{ py: 1.25 }}
+            >
+              {loginMutation.isPending ? <CircularProgress size={22} color="inherit" /> : "Sign in"}
+            </Button>
+          )}
         </form>
 
         <DevQuickLogin
