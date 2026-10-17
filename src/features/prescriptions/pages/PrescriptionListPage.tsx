@@ -20,6 +20,7 @@ export default function PrescriptionListPage() {
   const { patientNames } = usePatientNameMap();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [filter, setFilter] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["prescriptions", { page: page + 1, page_size: rowsPerPage }],
@@ -54,15 +55,34 @@ export default function PrescriptionListPage() {
       />
 
       <DataTable<Prescription>
+        filterValue={filter}
+        onFilterChange={(v) => { setFilter(v); setPage(0); }}
+        filterPlaceholder="Search patient, diagnosis, or status…"
         columns={[
-          { id: "created", header: "Created", render: (rx) => formatDateTime(rx.created_at) },
+          {
+            id: "created",
+            header: "Created",
+            sortValue: (rx) => rx.created_at,
+            render: (rx) => formatDateTime(rx.created_at),
+          },
           {
             id: "patient",
             header: "Patient",
+            sortValue: (rx) => resolvePatientName(patientNames, rx.patient_id),
             render: (rx) => resolvePatientName(patientNames, rx.patient_id),
           },
-          { id: "diagnosis", header: "Diagnosis", render: (rx) => rx.diagnosis_summary ?? "—" },
-          { id: "status", header: "Status", render: (rx) => <EntityStatusBadge status={rx.status} /> },
+          {
+            id: "diagnosis",
+            header: "Diagnosis",
+            sortValue: (rx) => rx.diagnosis_summary ?? "",
+            render: (rx) => rx.diagnosis_summary ?? "—",
+          },
+          {
+            id: "status",
+            header: "Status",
+            sortValue: (rx) => rx.status,
+            render: (rx) => <EntityStatusBadge status={rx.status} />,
+          },
           {
             id: "actions",
             header: "",
