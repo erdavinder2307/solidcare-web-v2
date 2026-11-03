@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { AxiosError, AxiosHeaders, type AxiosResponse } from "axios";
-import { getLoginErrorMessage, LOGIN_ERROR_MESSAGES } from "../loginErrorMessage";
+import { getLoginErrorMessage, isDatabaseStartingError, LOGIN_ERROR_MESSAGES } from "../loginErrorMessage";
 
 function axiosErrorWith(response?: { status: number; data?: unknown }): AxiosError {
   const config = { headers: new AxiosHeaders() };
@@ -36,5 +36,15 @@ describe("getLoginErrorMessage", () => {
     expect(getLoginErrorMessage(axiosErrorWith({ status: 401, data: {} }))).toBe(
       LOGIN_ERROR_MESSAGES.invalidCredentials,
     );
+  });
+});
+
+describe("isDatabaseStartingError", () => {
+  it("is true only for a 503 with the DB_STARTING code", () => {
+    expect(isDatabaseStartingError(axiosErrorWith({ status: 503, data: { error_code: "DB_STARTING" } }))).toBe(true);
+    expect(isDatabaseStartingError(axiosErrorWith({ status: 503, data: { detail: "db down" } }))).toBe(false);
+    expect(isDatabaseStartingError(axiosErrorWith({ status: 401, data: { error_code: "DB_STARTING" } }))).toBe(false);
+    expect(isDatabaseStartingError(axiosErrorWith())).toBe(false);
+    expect(isDatabaseStartingError(null)).toBe(false);
   });
 });
