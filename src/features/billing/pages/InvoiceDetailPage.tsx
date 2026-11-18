@@ -5,11 +5,16 @@ import {
   Breadcrumbs,
   Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Link,
   MenuItem,
   Paper,
   Skeleton,
   Snackbar,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +24,7 @@ import {
   Typography
 } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import Grid from "@mui/material/Grid2";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
@@ -37,6 +43,11 @@ export default function InvoiceDetailPage() {
   const [method, setMethod] = useState<PaymentMethod>("cash");
   const [reference, setReference] = useState("");
   const [toast, setToast] = useState<string | null>(null);
+
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [refundAmount, setRefundAmount] = useState("");
+  const [refundMethod, setRefundMethod] = useState<PaymentMethod>("cash");
+  const [refundReason, setRefundReason] = useState("");
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", invoiceId],
@@ -76,11 +87,32 @@ export default function InvoiceDetailPage() {
     },
   });
 
+  const refundMutation = useMutation({
+    mutationFn: () =>
+      billingApi.refundInvoice(invoice!.id, {
+        amount: Number(refundAmount),
+        reason: refundReason,
+        payment_method: refundMethod,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invoice", invoiceId] });
+      queryClient.invalidateQueries({ queryKey: ["invoice-payments", invoiceId] });
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      setRefundOpen(false);
+      setRefundAmount("");
+      setRefundReason("");
+      setToast("Refund recorded");
+    },
+  });
+
   if (isLoading) return <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 2 }} />;
   if (!invoice) return <Typography color="error">Invoice not found</Typography>;
 
   const canPay = can("billing:create") && invoice.outstanding_amount > 0 &&
     !["paid", "cancelled", "refunded"].includes(invoice.status);
+
+  const canRefund = can("billing:create") && invoice.paid_amount > 0 &&
+    ["paid", "partially_paid"].includes(invoice.status);
 
   return (
     <Box>
@@ -95,14 +127,27 @@ export default function InvoiceDetailPage() {
             <Typography variant="h5" fontWeight={700}>{invoice.invoice_number}</Typography>
             <Chip label={invoice.status.replace("_", " ")} size="small" />
           </Box>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<PrintIcon />}
-            onClick={() => window.open(`/billing/invoices/${invoice.id}/receipt`, "_blank")}
-          >
-            Print receipt
-          </Button>
+          <Stack direction="row" spacing={1}>
+            {canRefund && (
+              <Button
+                variant="outlined"
+                size="small"
+                color="warning"
+                startIcon={<CurrencyRupeeIcon />}
+                onClick={() => { setRefundAmount(String(invoice.paid_amount)); setRefundOpen(true); }}
+              >
+                Refund
+              </Button>
+            )}
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<PrintIcon />}
+              onClick={() => window.open(`/billing/invoices/${invoice.id}/receipt`, "_blank")}
+            >
+              Print receipt
+            </Button>
+          </Stack>
         </Box>
         <Typography variant="body2" color="text.secondary" mb={2}>
           {patient?.full_name ?? "Patient"} · {formatDate(invoice.invoice_date)}
@@ -185,18 +230,90 @@ export default function InvoiceDetailPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {(payments ?? []).map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>{p.receipt_number ?? "—"}</TableCell>
-                  <TableCell>{formatDateTime(p.paid_at)}</TableCell>
-                  <TableCell>{p.payment_method}</TableCell>
-                  <TableCell align="right">{formatCurrency(p.amount)}</TableCell>
-                </TableRow>
-              ))}
+              {(payments ?? []).map((p) => {
+                const isRefund = p.amount < 0 || p.status === "refunded";
+                return (
+                  <TableRow key={p.id}>
+                    <TableCell>{p.receipt_number ?? "—"}</TableCell>
+                    <TableCell>{formatDateTime(p.paid_at)}</TableCell>
+                    <TableCell>
+                      {p.payment_method}
+                      {isRefund && (
+                        <Chip label="Refund" size="small" color="warning" variant="outlined" sx={{ ml: 1 }} />
+                      )}
+                    </TableCell>
+                    <TableCell align="right" sx={{ color: isRefund ? "warning.main" : "text.primary" }}>
+                      {formatCurrency(p.amount)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         )}
       </Paper>
+
+      {/* Refund dialog */}
+      <Dialog open={refundOpen} onClose={() => setRefundOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Refund payment</DialogTitle>
+        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}>
+          <Alert severity="info" sx={{ mb: 0 }}>
+            {formatCurrency(invoice.paid_amount)} has been paid on this invoice. A refund records a
+            negative payment and cannot be undone.
+          </Alert>
+          <TextField
+            label="Refund amount"
+            type="number"
+            value={refundAmount}
+            onChange={(e) => setRefundAmount(e.target.value)}
+            fullWidth
+            size="small"
+            helperText={`Maximum refundable: ${formatCurrency(invoice.paid_amount)}`}
+            error={Number(refundAmount) > invoice.paid_amount}
+          />
+          <TextField
+            select
+            label="Refund method"
+            value={refundMethod}
+            onChange={(e) => setRefundMethod(e.target.value as PaymentMethod)}
+            fullWidth
+            size="small"
+          >
+            {PAYMENT_METHODS.map((m) => <MenuItem key={m} value={m}>{m.replace("_", " ")}</MenuItem>)}
+          </TextField>
+          <TextField
+            label="Reason"
+            value={refundReason}
+            onChange={(e) => setRefundReason(e.target.value)}
+            fullWidth
+            size="small"
+            multiline
+            rows={2}
+            required
+          />
+          {refundMutation.isError && (
+            <Alert severity="error">
+              {(refundMutation.error as any)?.response?.data?.detail ?? "Refund failed."}
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRefundOpen(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            color="warning"
+            disabled={
+              refundMutation.isPending ||
+              !refundReason.trim() ||
+              Number(refundAmount) <= 0 ||
+              Number(refundAmount) > invoice.paid_amount
+            }
+            onClick={() => refundMutation.mutate()}
+          >
+            {refundMutation.isPending ? "Processing…" : "Confirm refund"}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar open={!!toast} autoHideDuration={4000} onClose={() => setToast(null)}>
         <Alert severity="success" onClose={() => setToast(null)}>{toast}</Alert>

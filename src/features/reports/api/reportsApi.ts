@@ -24,6 +24,44 @@ export interface TopDiagnosisPoint {
   count: number;
 }
 
+export interface AgingBucket {
+  key: string;
+  label: string;
+  count: number;
+  amount: number;
+}
+
+export interface OutstandingInvoice {
+  invoice_id: string;
+  invoice_number: string;
+  invoice_date: string;
+  due_date: string | null;
+  patient_name: string;
+  patient_phone: string;
+  outstanding_amount: number;
+  days_overdue: number;
+  bucket: string;
+}
+
+export interface OutstandingAgingReport {
+  as_of: string;
+  total_outstanding: number;
+  total_invoices: number;
+  buckets: AgingBucket[];
+  invoices: OutstandingInvoice[];
+}
+
+export interface DoctorSummary {
+  from_date: string;
+  to_date: string;
+  appointments_total: number;
+  appointments_completed: number;
+  consultations: number;
+  unique_patients: number;
+  revenue_generated: number;
+  daily_trend: { date: string; label: string; consultations: number }[];
+}
+
 export const reportsApi = {
   dashboardKpis: (params?: { clinic_id?: string; report_date?: string }) =>
     apiClient.get("/reports/dashboard/kpis", { params }).then((r) => r.data),
@@ -66,4 +104,26 @@ export const reportsApi = {
     apiClient
       .get<TrendPoint[]>("/reports/appointments/opd-volume", { params })
       .then((r) => r.data),
+
+  outstandingAging: (params?: { clinic_id?: string; as_of?: string }) =>
+    apiClient
+      .get<OutstandingAgingReport>("/reports/billing/outstanding", { params })
+      .then((r) => r.data),
+
+  doctorSummary: (doctorId: string, params: { from_date: string; to_date: string }) =>
+    apiClient
+      .get<DoctorSummary>(`/reports/doctors/${doctorId}/summary`, { params })
+      .then((r) => r.data),
+
+  exportCsv: (report: ReportExportKey, params?: Record<string, string | number | undefined>) =>
+    apiClient
+      .get<Blob>(`/reports/export/${report}`, { params, responseType: "blob" })
+      .then((r) => r.data),
 };
+
+export type ReportExportKey =
+  | "opd-volume"
+  | "top-diagnoses"
+  | "outstanding"
+  | "revenue-trend"
+  | "appointment-types";

@@ -1,19 +1,29 @@
 import { useState } from "react";
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
-import { useQuery } from "@tanstack/react-query";
+import DownloadIcon from "@mui/icons-material/Download";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
 import { auditApi, type AuditLog } from "../api/auditApi";
 import { PageHeader, PageLayout } from "@/shared/layout";
 import { DataTable, DataTablePagination, EmptyState, StatusBadge } from "@/shared/ui";
 import { formatDateTime } from "@/shared/utils/formatters";
+import { csvFilename, downloadBlob } from "@/shared/utils/download";
 
 export default function AuditLogPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data, isLoading } = useQuery({
     queryKey: ["audit-logs", { page: page + 1, page_size: rowsPerPage }],
     queryFn: () => auditApi.list({ page: page + 1, page_size: rowsPerPage }),
+  });
+
+  const exportMutation = useMutation({
+    mutationFn: () => auditApi.exportCsv(),
+    onSuccess: (blob) => downloadBlob(blob, csvFilename("audit-logs")),
+    onError: () => enqueueSnackbar("Failed to export audit logs", { variant: "error" }),
   });
 
   const logs: AuditLog[] = data?.items ?? [];
@@ -25,6 +35,16 @@ export default function AuditLogPage() {
         title="Audit log"
         subtitle="Immutable record of PHI access and system actions"
         breadcrumbs={[{ label: "Administration" }, { label: "Audit log" }]}
+        actions={
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            disabled={exportMutation.isPending || total === 0}
+            onClick={() => exportMutation.mutate()}
+          >
+            {exportMutation.isPending ? "Exporting…" : "Export CSV"}
+          </Button>
+        }
       />
 
       <DataTable<AuditLog>

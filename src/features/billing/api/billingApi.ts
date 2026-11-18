@@ -87,6 +87,11 @@ export const billingApi = {
     transaction_reference?: string;
     notes?: string;
   }) => apiClient.post<Payment>("/billing/payments", data).then((r) => r.data),
+
+  refundInvoice: (
+    invoiceId: string,
+    data: { amount: number; reason: string; payment_method?: PaymentMethod },
+  ) => apiClient.post<Payment>(`/billing/invoices/${invoiceId}/refund`, data).then((r) => r.data),
 };
 
 // ---------- Service Charge Master ----------

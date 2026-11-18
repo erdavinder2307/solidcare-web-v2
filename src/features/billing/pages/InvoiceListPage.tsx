@@ -17,6 +17,7 @@ export default function InvoiceListPage() {
   const { patientNames } = usePatientNameMap();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [filter, setFilter] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["invoices", { page: page + 1, page_size: rowsPerPage }],
@@ -43,28 +44,50 @@ export default function InvoiceListPage() {
       />
 
       <DataTable<Invoice>
+        filterValue={filter}
+        onFilterChange={(v) => { setFilter(v); setPage(0); }}
+        filterPlaceholder="Search invoice #, patient, or status…"
         columns={[
           {
             id: "number",
             header: "Invoice #",
+            sortValue: (inv) => inv.invoice_number,
             render: (inv) => (
               <Typography variant="body2" fontFamily="monospace" fontWeight={600}>
                 {inv.invoice_number}
               </Typography>
             ),
           },
-          { id: "date", header: "Date", render: (inv) => formatDate(inv.invoice_date) },
+          {
+            id: "date",
+            header: "Date",
+            sortValue: (inv) => inv.invoice_date,
+            render: (inv) => formatDate(inv.invoice_date),
+          },
           {
             id: "patient",
             header: "Patient",
+            sortValue: (inv) => resolvePatientName(patientNames, inv.patient_id),
             render: (inv) => resolvePatientName(patientNames, inv.patient_id),
           },
-          { id: "status", header: "Status", render: (inv) => <EntityStatusBadge status={inv.status} /> },
-          { id: "total", header: "Total", align: "right", render: (inv) => formatCurrency(inv.total_amount) },
+          {
+            id: "status",
+            header: "Status",
+            sortValue: (inv) => inv.status,
+            render: (inv) => <EntityStatusBadge status={inv.status} />,
+          },
+          {
+            id: "total",
+            header: "Total",
+            align: "right",
+            sortValue: (inv) => inv.total_amount,
+            render: (inv) => formatCurrency(inv.total_amount),
+          },
           {
             id: "outstanding",
             header: "Outstanding",
             align: "right",
+            sortValue: (inv) => inv.outstanding_amount,
             render: (inv) => (
               <Typography
                 variant="body2"

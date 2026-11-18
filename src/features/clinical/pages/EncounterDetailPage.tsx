@@ -11,6 +11,7 @@ import {
   Typography
 } from "@mui/material";
 import GppGoodIcon from "@mui/icons-material/GppGood";
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import Grid from "@mui/material/Grid2";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -98,6 +99,15 @@ export default function EncounterDetailPage() {
               Attest &amp; Sign
             </Button>
           )}
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<PrintOutlinedIcon />}
+            sx={{ ml: "auto" }}
+            onClick={() => window.open(`/encounters/${encounter.id}/print`, "_blank")}
+          >
+            Print
+          </Button>
         </Box>
 
         <Grid container spacing={2}>

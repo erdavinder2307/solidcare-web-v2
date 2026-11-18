@@ -60,6 +60,7 @@ const NurseVitalsPage = lazy(() => import("@/features/clinical/pages/workspace/N
 const ConsultationPage = lazy(() => import("@/features/clinical/pages/ConsultationPage"));
 const EncounterListPage = lazy(() => import("@/features/clinical/pages/EncounterListPage"));
 const EncounterDetailPage = lazy(() => import("@/features/clinical/pages/EncounterDetailPage"));
+const EncounterPrintPage = lazy(() => import("@/features/clinical/pages/EncounterPrintPage"));
 
 const PrescriptionListPage = lazy(() => import("@/features/prescriptions/pages/PrescriptionListPage"));
 const PrescriptionCreatePage = lazy(() => import("@/features/prescriptions/pages/PrescriptionCreatePage"));
@@ -116,6 +117,11 @@ export function Router() {
           <Route path="/queue/board" element={<QueueBoardPage />} />
 
           <Route element={<AuthGuard />}>
+            {/* Print / document routes — auth-protected but rendered without the app shell */}
+            <Route path="/encounters/:encounterId/print" element={<RoutePermission permission="encounter:read"><EncounterPrintPage /></RoutePermission>} />
+            <Route path="/prescriptions/:prescriptionId/print" element={<RoutePermission permission="prescription:read"><PrescriptionPrintPage /></RoutePermission>} />
+            <Route path="/billing/invoices/:invoiceId/receipt" element={<RoutePermission permission="billing:read"><PaymentReceiptPage /></RoutePermission>} />
+
             <Route element={<AppShell />}>
               <Route path="/dashboard" element={<RoutePermission permission={null}><DashboardPage /></RoutePermission>} />
 
@@ -162,12 +168,10 @@ export function Router() {
               <Route path="/prescriptions" element={<RoutePermission permission="prescription:read"><PrescriptionListPage /></RoutePermission>} />
               <Route path="/prescriptions/new" element={<RoutePermission permission="prescription:create"><PrescriptionCreatePage /></RoutePermission>} />
               <Route path="/prescriptions/:prescriptionId" element={<RoutePermission permission="prescription:read"><PrescriptionDetailPage /></RoutePermission>} />
-              <Route path="/prescriptions/:prescriptionId/print" element={<RoutePermission permission="prescription:read"><PrescriptionPrintPage /></RoutePermission>} />
 
               <Route path="/billing/invoices" element={<RoutePermission permission="billing:read"><InvoiceListPage /></RoutePermission>} />
               <Route path="/billing/invoices/new" element={<RoutePermission permission="billing:create"><InvoiceCreatePage /></RoutePermission>} />
               <Route path="/billing/invoices/:invoiceId" element={<RoutePermission permission="billing:read"><InvoiceDetailPage /></RoutePermission>} />
-              <Route path="/billing/invoices/:invoiceId/receipt" element={<RoutePermission permission="billing:read"><PaymentReceiptPage /></RoutePermission>} />
               <Route path="/billing/service-charges" element={<RoutePermission permission="billing:read"><ServiceChargeMasterPage /></RoutePermission>} />
 
               <Route path="/reports" element={<RoutePermission permission="report:read"><ReportsPage /></RoutePermission>} />
