@@ -27,6 +27,7 @@ import {
   YAxis,
 } from "recharts";
 import { reportsApi } from "../api/reportsApi";
+import OnboardingChecklist from "../components/OnboardingChecklist";
 import { useActiveClinicId } from "@/shared/hooks/useActiveClinic";
 import { useAuthStore } from "@/app/store/authStore";
 import { useClinicStore } from "@/app/store/clinicStore";
@@ -158,6 +159,8 @@ export default function DashboardPage() {
       {isLoading && <LinearProgress sx={{ mb: 2, borderRadius: 1 }} />}
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {(hasRole("admin") || hasRole("superadmin")) && <OnboardingChecklist key={clinicId} clinicId={clinicId} />}
+
         <StatStrip
           items={[
             {
